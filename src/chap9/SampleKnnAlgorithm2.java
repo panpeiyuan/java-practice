@@ -16,13 +16,12 @@ public class SampleKnnAlgorithm2 {
             int k = 3;
             int[] idx = new int[k];                    // 装选出来的三个下标
             boolean[] used = new boolean[arr.length];  // 记录哪些点已经被选走，初始全是 false
-
             for (int round = 0; round < k; round++) {  // 一共选 k 次
                 double best = Double.MAX_VALUE;        // 当前最小距离，先设成"无穷大"
                 int bestIndex = -1;                    // 当前最小距离对应的下标
                 for (int i = 0; i < dist.length; i++) {
                     if (!used[i] && dist[i] < best) {  // 没被选过，而且比当前最小还小
-                        best = dist[i];
+                        best = dist[i];//改变best值
                         bestIndex = i;
                     }
                 }
@@ -34,14 +33,12 @@ public class SampleKnnAlgorithm2 {
             for (int r = 0; r < k; r++) {
                 vote[labels[idx[r]]]++;
             }
-
             System.out.println("最近三个点的下标:" + idx[0] + "、" + idx[1] + "、" + idx[2]);
             System.out.println("它们对应的标签:" + labels[idx[0]] + "、" + labels[idx[1]] + "、" + labels[idx[2]]);
             System.out.println("类别1得" + vote[1] + "票，类别2得" + vote[2] + "票");
-
             if (vote[1] > vote[2]) {
                 System.out.println("预测类别:1");
-            } else if (vote[2] > vote[1]) {
+            } else if (vote[1] > vote[2]) {
                 System.out.println("预测类别:2");
             } else {
                 System.out.println("票数相同，无法判断");
