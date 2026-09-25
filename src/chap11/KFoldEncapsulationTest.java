@@ -4,12 +4,12 @@ public class KFoldEncapsulationTest {
     public static void main(String[] args){
         int m=150;
         int k=10;
-        int[] hit=new int[m];
-        KFoldEncapsulation kf=new KFoldEncapsulation(m,k);
+        int[] hit=new int[m];//创建一个数组来记录是不是所有的数据都被用上了
+        KFoldEncapsulation kf=new KFoldEncapsulation(m,k);//构造了一个kf对象，且创建了一个数量为150个，折数为10折的数据集
         for(int fold=0;fold<k;fold++){
-            int test[] =kf.testIndex(fold);
+            int test[] =kf.testIndex(fold);//从0折开始到第10折，把每折的测试集存入test[]
             for(int p=0;p<test.length;p++){
-                hit[test[p]]++;
+                hit[test[p]]++;//把hit[]数组中在test[]数组中出现过的值变成1
             }
         }
         boolean ok = true;
