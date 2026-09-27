@@ -3,13 +3,13 @@ package chap12ObjectOrientedGeneralPractice;
 public class GirlFriend {
     private String name;
     private int age;
-    private char gender;
+    private String gender;
     private String habits;
 
     public GirlFriend() {
     }
 
-    public GirlFriend(int age, String name, char gender, String habits) {
+    public GirlFriend(int age, String name, String gender, String habits) {
         this.age = age;
         this.name = name;
         this.gender = gender;
@@ -40,11 +40,11 @@ public class GirlFriend {
         this.habits = habits;
     }
 
-    public char getGender() {
+    public String getGender() {
         return gender;
     }
 
-    public void setGender(char gender) {
+    public void setGender(String gender) {
         this.gender = gender;
     }
 }
