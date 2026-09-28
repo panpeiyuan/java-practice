@@ -53,7 +53,7 @@ public class TenByTenKnn {
                 for (int i = 0; i < trainlabel.length; i++) {
                     trainlabel[i]=labels[train[i]];
                 }
-                KnnAlgorithm ka=new KnnAlgorithm(knntrain,trainlabel,1);
+                KnnAlgorithm ka=new KnnAlgorithm(knntrain,trainlabel,15);
                 double correct=0;
                 int min_label=0;
                 for (int i = 0; i < test.length; i++) {

@@ -36,13 +36,16 @@ public class KnnAlgorithm {
             idx[i]=min_distance_index;
             used[min_distance_index]=true;
         }
-        int[] vote = new int[maxlabel+1];
+        double[] vote = new double[maxlabel+1];
         for (int r = 0; r < k; r++) {
-            vote[trainlabels[idx[r]]]++;
+            vote[trainlabels[idx[r]]]+=1/alldistance[idx[r]];
         }
-        int maxvote=0;
+        double maxvote=0;
         int maxvoteindex=-1;
-        for (int i = 1; i < vote.length; i++) {
+        if(alldistance[idx[0]]==0){
+            return trainlabels[idx[0]];
+        }
+        for (int i = 0; i < vote.length; i++) {
             if(vote[i]>maxvote){
                 maxvote=vote[i];
                 maxvoteindex=i;
@@ -50,5 +53,4 @@ public class KnnAlgorithm {
         }
         return maxvoteindex;
     }
-
 }
