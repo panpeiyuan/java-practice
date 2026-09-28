@@ -6,7 +6,7 @@ public class FileDemo {
     public static void main(String[] args){
         //1.根据字符串表示的路径，变成File对象
         String str="C:\\Users\\31376\\Desktop\\a.txt";
-        File f1=new File(str);
+        File f1=new File(str);//把字符串转换为真实路径
         System.out.println(f1);
         //2.父级路径：C:Users31376Desktop
         //子集路径：a.text
