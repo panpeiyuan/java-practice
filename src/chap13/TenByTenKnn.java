@@ -57,7 +57,7 @@ public class TenByTenKnn {
                 double correct=0;
                 int min_label=0;
                 for (int i = 0; i < test.length; i++) {
-                    min_label=ka.predict(data[test[i]]);
+                    min_label=ka.predict(data[test[i]]);//通过距离算标签
                     if(min_label==labels[test[i]]){
                         correct++;
                     }
@@ -67,7 +67,8 @@ public class TenByTenKnn {
             }
         }
         for (int i = 0; i < accs.length; i++) {
-            System.out.println("第"+(i+1)+"次实验的正确率为"+accs[i]);
+            System.out.printf("第"+(i+1)+"次实验的正确率为"+"%.4f",accs[i]);
+            System.out.println();
         }
         double sum_correct=0;
         for (int i = 0; i < accs.length; i++) {//算正确率均值

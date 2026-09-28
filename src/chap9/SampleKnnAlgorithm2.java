@@ -38,7 +38,7 @@ public class SampleKnnAlgorithm2 {
             System.out.println("类别1得" + vote[1] + "票，类别2得" + vote[2] + "票");
             if (vote[1] > vote[2]) {
                 System.out.println("预测类别:1");
-            } else if (vote[1] > vote[2]) {
+            } else if (vote[1] < vote[2]) {
                 System.out.println("预测类别:2");
             } else {
                 System.out.println("票数相同，无法判断");
