@@ -14,11 +14,11 @@ class Tower{
         }else{
             //如果有多个盘，可以看作两个，一个是最下面的，一个是上面所有的
             //先移动上面所有的盘到b，借助c
-            move(num-1,a,c,b);
+            move(num-1,a,c,b);//一直调用方法进站，直到num==1；
             //把最下面这个盘移动到c
             System.out.println(a+"->"+c);
             //再把b塔所有的盘移动到c，借助a
-            move(num-1,b,a,c);
+            move(num-1,b,a,c);//把上面b柱子上面的放入柱子
         }
     }
 }
