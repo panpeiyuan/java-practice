@@ -21,11 +21,12 @@ public class RecursionTest5 {
             if(exists){
                 arr[row][line]=1;
                 canplace(arr,row+1);
-                arr[row][line]=0;
+                arr[row][line]=0;//在每一次摆完之后把棋盘还原
             }
         }
     }
     public static boolean ok(int[][] arr,int row,int line){
+        //判断这个格子的同一列和左上右上对角线是否有皇后
         for(int i=0;i<arr.length;i++){
             if(arr[i][line]==1){
                 return false;
