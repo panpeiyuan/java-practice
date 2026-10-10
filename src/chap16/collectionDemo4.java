@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.function.Consumer;
 
 public class collectionDemo4 {
+    //只想遍历，则可以使用增强for或者lambda遍历
     //lambda表达式遍历:default void forEach(Consumer<? super E>action):
     public static void main(String[] args){
         Collection<String> coll=new ArrayList<>();
