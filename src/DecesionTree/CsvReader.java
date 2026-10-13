@@ -24,11 +24,4 @@ public class CsvReader {
         sc.close();
         return samplelist;
     }
-    public static void main(String[] args) throws Exception {
-        File file = new File("D:/算法学习测试数据集/CSV/hay.csv");
-        ArrayList<Sample> sample = CsvReader.csvreader(file);
-        System.out.println("样本数有" + sample.size() + "个");
-        int attnumber = sample.get(1).getAttributevalue().length;//从s中选取一个对象，调用第一个对象的属性值数组，然后统计属性值数组的长度
-        System.out.println("属性值有" + attnumber + "个");
-    }
 }

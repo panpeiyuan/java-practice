@@ -28,7 +28,7 @@ public class Sample {
         this.label = label;
     }
     public int getvalue(int a){
-        //获取第a个属性取值的方法
+        //获取第a个属性值的方法
         return attributevalue[a];
     }
 }
