@@ -4,6 +4,8 @@ import chap11.KFoldEncapsulation;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DecisionTreeTest {
     public static void main(String[] args) throws Exception {
@@ -23,6 +25,7 @@ public class DecisionTreeTest {
         for(int i=0;i<ds.getAttnumber();i++){
             attindex.add(i);
         }
+        Set<TreeNode> treesample=new HashSet<>();//存剪枝后所有的决策树对象
         // 1. 建树 + 打印
         TreeNode root = dt.buildtree(sampleindex, attindex);//以所有样本进行建树
         dt.printtree(root, 0);
@@ -63,8 +66,10 @@ public class DecisionTreeTest {
                 }
 
                 TreeNode tree = dt.buildtree(trainList, attindex);// 每折以训练集作为输入重新建树
-                for(int i=0;i<alphas.length;i++){
+
+                for(int i=0;i<alphas.length;i++){//剪枝
                     TreeNode cuttree=dt.postpruning(tree,alphas[i]);
+                    treesample.add(cuttree);
                     int traincorr=0;//统计验证集的正确数目
                     for (int i1 = 0; i1 < cutlist.size(); i1++) {
                         int cutindex=cutlist.get(i1);
