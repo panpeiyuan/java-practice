@@ -2,6 +2,7 @@ package DecesionTree;
 
 public class Sample {
     //仅限整数类样本使用
+    //sample对象的构造方法：属性取值（数组）和标签
     private int[] attributevalue;
     private int label;
 

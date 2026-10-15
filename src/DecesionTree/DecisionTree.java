@@ -14,6 +14,7 @@ public class DecisionTree {
     }
 
     public Map<Integer,Integer> countLabels(ArrayList<Integer> list){
+        //输出每个类别有多少个样本的方法
         Map<Integer,Integer> hm=new HashMap<>();
         for (Integer i : list) {
             int label=dataset.get(i).getLabel();
@@ -93,9 +94,9 @@ public class DecisionTree {
     public TreeNode buildtree(ArrayList<Integer> list,ArrayList<Integer> remainattribute){
         //创建叶节点（递归结束）的三个情况
         if(countLabels(list).size()==1){//样本输进去，只有一个类别
-            return new TreeNode(majorlabel(list));
+            return new TreeNode(majorlabel(list),list);
         }else if(remainattribute.size()==0){//已经没有可用的分类属性了（即存在所有属性都相同但类别不同的样本，此时叶节点取占比多的）
-            return new TreeNode(majorlabel(list));
+            return new TreeNode(majorlabel(list),list);
         }
         boolean allsame=true;
         for (Integer i : remainattribute) {//判断剩下的样本是不是都属于同一类别
@@ -111,11 +112,11 @@ public class DecisionTree {
             }
         }
         if(allsame){//例如：一共三个属性，但是用完前两个属性分类的所有样本都属于同一类型了，就不需要再用第三个属性进行筛选了，直接创建叶节点即可
-            return new TreeNode(majorlabel(list));
+            return new TreeNode(majorlabel(list),list);
         }
         //创建内部节点的方法
         int bestatt=chooseBestAttribute(list,remainattribute);//根据信息增益找最优划分属性
-        TreeNode node=new TreeNode(bestatt,gain(list,bestatt),majorlabel(list));//构造内部节点
+        TreeNode node=new TreeNode(bestatt,gain(list,bestatt),majorlabel(list),list);//构造内部节点
         ArrayList<Integer> rest=new ArrayList<>(remainattribute);//把remainattribute集合里的元素拷贝到rest集合里
         rest.remove(Integer.valueOf(bestatt));//把bestatt变成Integer对象类型，使用remove按值删（若不转为Integer，使用bastatt的int类型的话，remove是按位置删的）
         for (Integer v : dataset.getDomain(bestatt)) {//getdomain(a)方法返回一个Set<>集合,并遍历这个集合
@@ -128,6 +129,7 @@ public class DecisionTree {
         return node;
     }
     public void printtree(TreeNode node,int level){
+        //无用，就是看看树的最终结构
         String indent=" ";
         for(int i=0;i<level;i++){
             indent+=" ";
@@ -143,13 +145,56 @@ public class DecisionTree {
         }
     }
     public int predict(TreeNode node,int[] arr){
+        //拿一个建好的树，喂进去一个样本，输出这个样本该判为哪一类
         while(!node.isLeaf()){
             TreeNode next=node.getChildren().get(arr[node.getAttribute()]);
-            if(next==null){
+            if(next==null){//因为上面buildtree方法里写了，若该属性取值下没有样本，则不建树
                 return node.getFallbacklabel();
             }
             node=next;
         }
         return node.getLabel();
+    }
+    public double emrntoy(TreeNode node){//输入某一个节点，输出该节点的经验熵
+        //后剪枝,只要知道节点t下各类别样本各多少条即可
+        ArrayList<Integer> arr=node.getNodelist();
+        double entoy=entropy(arr);//该节点的经验熵
+        return entoy;
+    }
+    public int leafnum(TreeNode tree){//求这一颗树的叶节点个数
+        if(tree.isLeaf()){
+            return 1;
+        }
+        int total =0;
+        for (Map.Entry<Integer, TreeNode> integerTreeNodeEntry : tree.getChildren().entrySet()) {
+                total+=leafnum(integerTreeNodeEntry.getValue());
+        }
+        return total;
+    }
+    public double losingfunction(TreeNode tree){//输入一个树,递归计算每个节点的熵,最后求得整个树的损失函数
+        if(tree.isLeaf()){
+            return tree.getNodelist().size()*entropy(tree.getNodelist());
+        }
+        double sum=0;
+        for (Map.Entry<Integer, TreeNode> integerTreeNodeEntry : tree.getChildren().entrySet()) {
+            sum+=losingfunction(integerTreeNodeEntry.getValue());
+        }
+        return sum;
+    }
+    public TreeNode postpruning(TreeNode tree,double a){
+        //决策树剪枝方法
+         if(tree.isLeaf()){
+             return tree;
+         }
+        for (Map.Entry<Integer, TreeNode> integerTreeNodeEntry : tree.getChildren().entrySet()) {
+            integerTreeNodeEntry.setValue(postpruning(integerTreeNodeEntry.getValue(),a));
+        }
+        double lostcut=tree.getNodelist().size()*emrntoy(tree)+a;//单独算该内部节点的损失函数
+        double lostkeep=losingfunction(tree)+a*leafnum(tree);//算该内部节点下面叶节点的损失函数
+        if(lostcut<=lostkeep){
+            TreeNode newtreenode=new TreeNode(tree.getFallbacklabel(),tree.getNodelist());//把该点存为叶节点
+            return newtreenode;
+        }
+        return tree;
     }
 }

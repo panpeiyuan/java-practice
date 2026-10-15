@@ -41,6 +41,7 @@ public class DataSet {
         return attnumber;
     }
     public Set<Integer> getDomain(int i){
+        //返回第i个属性的取值集合
         return valuerange.get(i);
     }
 }

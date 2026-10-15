@@ -1,5 +1,6 @@
 package DecesionTree;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,14 +13,16 @@ public class TreeNode {
     private double gain;//信息增益
     private int fallbacklabel;//数量最多的样本的所属类别
     private Map<Integer,TreeNode> children;
+    private ArrayList<Integer> nodelist;//存节点t下的所有样本下标
 
-    public TreeNode(int label) {//叶节点的构造方法
+    public TreeNode(int label,ArrayList<Integer> nodelist) {//叶节点的构造方法
         //造叶节点
         isLeaf=true;
         this.label = label;
+        this.nodelist=nodelist;
     }
 
-    public TreeNode(int attribute, double gain, int fallbacklabel) {//内部节点的构造方法
+    public TreeNode(int attribute, double gain, int fallbacklabel, ArrayList<Integer> nodelist) {//内部节点的构造方法
         //造内部节点
         //！！注意：fallbacklabel的作用是在预测时，若遇到了从没见过的类别，返回的就是fallbacklabel
         isLeaf=false;
@@ -27,6 +30,7 @@ public class TreeNode {
         this.gain = gain;
         this.fallbacklabel = fallbacklabel;
         children=new HashMap<>();
+        this.nodelist=nodelist;
     }
 
     public boolean isLeaf() {
@@ -75,5 +79,13 @@ public class TreeNode {
 
     public void setChildren(Map<Integer, TreeNode> children) {
         this.children = children;
+    }
+
+    public ArrayList<Integer> getNodelist() {
+        return nodelist;
+    }
+
+    public void setNodelist(ArrayList<Integer> nodelist) {
+        this.nodelist = nodelist;
     }
 }

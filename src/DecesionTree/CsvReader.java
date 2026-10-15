@@ -22,6 +22,6 @@ public class CsvReader {
             samplelist.add(s);
         }
         sc.close();
-        return samplelist;
+        return samplelist;//返回一个ArrayList数组，这个数组添加的是sample对象
     }
 }
