@@ -37,7 +37,7 @@ public class DataSet {
     }
     public Bayessample get(int i){
         return samplelist.get(i);
-    }
+    }//由下标取到样本的方法
     public int getAttnumber(){
         return attnumber;
     }
