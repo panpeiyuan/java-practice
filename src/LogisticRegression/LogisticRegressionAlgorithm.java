@@ -58,13 +58,18 @@ public class LogisticRegressionAlgorithm {
         return probs;
     }
 
-    public double LikehoodFunction(ArrayList<LogisticSample> sample) {
+    public double LikehoodFunction(ArrayList<LogisticSample> samplelist) {
         //多项逻辑斯蒂回归的似然函数
         //二分类的逻辑斯蒂回归用sigmoid，多分类的逻辑斯蒂回归用softmax（本处就是用的softmax）
         double lfvalue = 0;
-        for (LogisticSample logisticSample : sample) {
+        for (LogisticSample logisticSample : samplelist) {
             Map<Integer, Double> probs = P_k(score(logisticSample.getAttributevalue()));
-            lfvalue += Math.log(probs.get(logisticSample.getLabel()));
+            double temptp=probs.get(logisticSample.getLabel());
+            if(temptp< 1e-15){//防止下溢
+                lfvalue+=Math.log(1e-15);
+            }else{
+                lfvalue += Math.log(probs.get(logisticSample.getLabel()));
+            }
         }
         return lfvalue;
     }
@@ -77,22 +82,21 @@ public class LogisticRegressionAlgorithm {
             TreeMap<Integer, Double> gradb = new TreeMap<>();
 
             //先给每个类别准备一个全0的梯度(逻辑斯蒂回归参数从0开始训练)
-
-            int n = ds.size();//求出样本集个数
             int d = ds.getAttnumber();//求出样本属性个数
             for (Integer label : w.keySet()) {
                 //给gradw和gradb加上标签
                 gradw.put(label, new double[d]);
                 gradb.put(label, 0.0);
             }
-
             for (LogisticSample logisticSample : ds.getSamplelist()) {//遍历样本集每一个样本
-                //labelpre存每个类别对应的概率
+                //labelpre存每个类别的预测概率
                 Map<Integer, Double> labelpre = P_k(score(logisticSample.getAttributevalue()));
                 //该样本的真实标签
                 int truelabel = logisticSample.getLabel();
                 //遍历所有的预测标签
                 Set<Integer> preprob = labelpre.keySet();
+
+                //对于每一个类别都
                 for (Integer integer : preprob) {
                     double error = 0;//error表示对于这个样本，预测的类别错的有多严重（三个预测类别分别计算）
                     if (truelabel == integer) {//预测正确，error表示模型不自信的程度，此时error>0,此类得分需要上升
@@ -100,15 +104,17 @@ public class LogisticRegressionAlgorithm {
                     } else {//预测错误，error表示模型给错了太多概率，此时error<0，此类得分需要下降
                         error = 0 - labelpre.get(integer);
                     }
-                    //求对w的偏导
-                    double[] gw=gradw.get(integer);//更新该类别下的属性权重
+                    //得到该类别下的属性权重
+                    double[] gw=gradw.get(integer);
                     for(int j=0;j<ds.getAttnumber();j++){
                         gw[j]+=error*logisticSample.getAttributevalue()[j];//误差乘样本在各个属性下的取值
                     }
                     gradb.put(integer, gradb.get(integer) + error);//对bk的偏导，常数b在各个预测类别的取值+error
                 }
             }
+
             for (Integer label : w.keySet()) {
+                //把gw里的权重迭代数据更新到w和b里
                 double[] weights=w.get(label);
                 double[] gw=gradw.get(label);
 
@@ -118,13 +124,23 @@ public class LogisticRegressionAlgorithm {
 
                 b.put(label,b.get(label)+learningrate*gradb.get(label)/ds.size());
             }
-
-            System.out.println("训练轮数为:" + (i + 1) + " 似然函数的值为 " + LikehoodFunction(ds.getSamplelist()));
-
+            if((i+1)%1000==0){
+                //每训练1000轮求一次似然函数
+                System.out.println("训练轮数为:" + (i + 1) + " 似然函数的值为 " + LikehoodFunction(ds.getSamplelist()));
+            }
         }
     }
 
-    public int predict(double[] x){
-
+    public int predict(LogisticSample sample){
+        Map<Integer,Double> premap=P_k(score(sample.getAttributevalue()));
+        double maxp=-1;
+        int bestlabel=Integer.MIN_VALUE;
+        for (Integer prelabel : premap.keySet()) {
+            if(premap.get(prelabel)>maxp){
+                maxp=premap.get(prelabel);
+                bestlabel=prelabel;
+            }
+        }
+        return bestlabel;
     }
 }
