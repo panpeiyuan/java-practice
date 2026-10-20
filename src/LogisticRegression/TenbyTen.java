@@ -14,9 +14,6 @@ public class TenbyTen {
         int k = 10;//k折
         int times = 10;//times次k折
         for (int t = 0; t < times; t++) {//第t次k折
-            //每一次十折都重新建一个模型
-            LogisticRegressionAlgorithm logisticmodel = new LogisticRegressionAlgorithm(ds);
-
             KFoldEncapsulation kf = new KFoldEncapsulation(logisticSamples.size(), k);//m个样本，做k折
             for (int fold = 0; fold < k; fold++) {
                 int[] train = kf.trainIndex(fold);//训练集
@@ -40,6 +37,14 @@ public class TenbyTen {
                 //用训练集的均值和方差对训练集和测试集进行标准化
                 ArrayList<LogisticSample> normaltrain=normal.apply(trainsample);
                 ArrayList<LogisticSample> normaltest=normal.apply(testsample);
+
+                DataSet ds=new DataSet(normaltrain);
+                LogisticRegressionAlgorithm logisticmodel=new  LogisticRegressionAlgorithm(ds);
+                logisticmodel.parametertrain(20000,2);
+
+                for (LogisticSample testSample : normaltest) {
+
+                }
             }
         }
     }
