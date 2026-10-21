@@ -13,7 +13,11 @@ public class TenbyTen {
 
         int k = 10;//k折
         int times = 10;//times次k折
+        double sum=0;//存10x10折总平均正确率
         for (int t = 0; t < times; t++) {//第t次k折
+            //统计每折测试集的正确率
+            double percorrect=0;
+
             KFoldEncapsulation kf = new KFoldEncapsulation(logisticSamples.size(), k);//m个样本，做k折
             for (int fold = 0; fold < k; fold++) {
                 int[] train = kf.trainIndex(fold);//训练集
@@ -42,10 +46,18 @@ public class TenbyTen {
                 LogisticRegressionAlgorithm logisticmodel=new  LogisticRegressionAlgorithm(ds);
                 logisticmodel.parametertrain(20000,2);
 
+                int correctnum=0;
                 for (LogisticSample testSample : normaltest) {
-
+                    //每一折统计一次测试集合正确个数
+                    if(logisticmodel.predict(testSample)==testSample.getLabel()){
+                        correctnum++;
+                    }
                 }
+                percorrect+=(double)correctnum/normaltest.size();
             }
+            sum+=percorrect;
+            System.out.println("第"+(t+1)+"轮十折，验证集平均的准确率为:"+percorrect/10);
         }
+        System.out.println("10x10折交叉验证,总平均正确率为:"+sum/100);
     }
 }

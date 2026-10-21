@@ -124,10 +124,6 @@ public class LogisticRegressionAlgorithm {
 
                 b.put(label,b.get(label)+learningrate*gradb.get(label)/ds.size());
             }
-            if((i+1)%1000==0){
-                //每训练1000轮求一次似然函数
-                System.out.println("训练轮数为:" + (i + 1) + " 似然函数的值为 " + LikehoodFunction(ds.getSamplelist()));
-            }
         }
     }
 
