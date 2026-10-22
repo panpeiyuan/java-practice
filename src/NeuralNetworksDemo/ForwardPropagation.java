@@ -76,29 +76,32 @@ public class ForwardPropagation {
         return fr;
     }
 
-    public Gradients backward(ForwardResult forwardResult,int label){
+    public Gradients backward(ForwardResult forwardResult,int label) {
         //使用平方误差作为损失函数
-        double y_hat=forwardResult.getOutput()[0];//二分类问题只有一个输出概率
-        int y=label;
-        double losefunction=(double)(y_hat-y)*(y_hat-y)/2;
+        double y_hat = forwardResult.getOutput()[0];//二分类问题只有一个输出概率
+        int y = label;
+        double losefunction = (double) (y_hat - y) * (y_hat - y) / 2;
         //构造一个对象用来存储后向传播得到的梯度
-        Gradients grad=new Gradients(inputUnitCount,hidenUnitCount,outputUnitCount);
+        Gradients grad = new Gradients(inputUnitCount, hidenUnitCount, outputUnitCount);
 
         //计算w2的梯度并存入Gradients中
-        double[][] gradw2=new double[outputUnitCount][hidenUnitCount];
-        for(int i=0;i<outputUnitCount;i++){
-            for(int j=0;j<hidenUnitCount;j++){
-                double gradvalue=(y_hat-y)*y_hat*(1-y_hat)*forwardResult.getHiddenoutput()[j];
-                gradw2[i][j]=gradvalue;
+        double[][] gradw2 = new double[outputUnitCount][hidenUnitCount];
+        for (int i = 0; i < outputUnitCount; i++) {
+            for (int j = 0; j < hidenUnitCount; j++) {
+                double gradvalue = (y_hat - y) * y_hat * (1 - y_hat) * forwardResult.getHiddenoutput()[j];
+                gradw2[i][j] = gradvalue;
             }
         }
         grad.setGradW2(gradw2);
 
         //计算b2的梯度并存入Gradients中
-        double[] gradb2=new double[outputUnitCount];
-        double bvalue=(y_hat-y)*y_hat*(1-y_hat);
+        double[] gradb2 = new double[outputUnitCount];
+        double bvalue = (y_hat - y) * y_hat * (1 - y_hat);
         for (int i = 0; i < gradb2.length; i++) {
-            gradb2[i]=bvalue;
+            gradb2[i] = bvalue;
         }
         grad.setGradB2(gradb2);
+
+        return grad;
+    }
 }
