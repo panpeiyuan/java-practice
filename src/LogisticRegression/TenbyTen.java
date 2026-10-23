@@ -1,6 +1,6 @@
 package LogisticRegression;
 
-import chap11.KFoldEncapsulation;
+import KFold.KFoldEncapsulation;
 
 import java.io.File;
 import java.util.ArrayList;
