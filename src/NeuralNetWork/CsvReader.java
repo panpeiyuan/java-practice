@@ -22,16 +22,10 @@ public class CsvReader {
             for (int i = 0; i < attributenumber; i++) {
                 sampleattvalue[i]=Double.parseDouble(parts[i].trim());
             }
-            int samplelabel= parseInt(parts[parts.length - 1]);
-            //做二分类，只保留1，2类别,标签1编码为1，标签2编码为0
-            if(samplelabel==1){
-                NeuralnetSample n=new NeuralnetSample(sampleattvalue,samplelabel);
-                samplelist.add(n);
-            }
-            if(samplelabel==2){
-                NeuralnetSample n=new NeuralnetSample(sampleattvalue,0);
-                samplelist.add(n);
-            }
+            //把类别1，2，3分别减1
+            int samplelabel= parseInt(parts[parts.length - 1])-1;
+            NeuralnetSample sample=new NeuralnetSample(sampleattvalue,samplelabel);
+            samplelist.add(sample);
         }
         sc.close();
         return samplelist;//返回一个ArrayList数组，这个数组添加的是Neuralnetsample对象
