@@ -78,60 +78,53 @@ public class ForwardPropagation {
     }
 
     public Gradients backward(ForwardResult forwardResult,int label) {
-        //使用平方误差作为损失函数
-        double[] y_hat = forwardResult.getOutput();//二分类问题只有一个输出概率
+        //得到预测概率数组
+        double[] y_hat = forwardResult.getOutput();
         int y = label;
         //创建一个gradients对象存储backword的结果
         Gradients gradients=new Gradients(inputUnitCount,hidenUnitCount,outputUnitCount);
+
+        //计算w2梯度并存入Gradients中
         double[][] gradw2=new double[outputUnitCount][hidenUnitCount];
         for (int i = 0; i < gradw2.length; i++) {
-            for (int j = 0; j < gradw2.length; j++) {
-
+            for (int j = 0; j < gradw2[i].length; j++) {
+                if(i==y){
+                    gradw2[i][j]=(forwardResult.getOutput()[i]-1)*y_hat[i]*(1-y_hat[i])*forwardResult.getHiddenoutput()[j];
+                }else{
+                    gradw2[i][j]=(forwardResult.getOutput()[i]-0)*y_hat[i]*(1-y_hat[i])*forwardResult.getHiddenoutput()[j];
+                }
             }
         }
-        for (int i = 0; i < y_hat.length; i++) {
-            if(y_hat[i]==y){
-                double error=y_hat[i]-1;
-            }else{
-                double error=y_hat[i]-0;
-            }
-        }
-        double losefunction = (double) (y_hat - y) * (y_hat - y) / 2;
-
-        //计算w2的梯度并存入Gradients中
-        double[][] gradw2 = new double[outputUnitCount][hidenUnitCount];
-        for (int i = 0; i < outputUnitCount; i++) {
-            for (int j = 0; j < hidenUnitCount; j++) {
-                double gradw2value = (y_hat - y) * y_hat * (1 - y_hat) * forwardResult.getHiddenoutput()[j];
-                gradw2[i][j] = gradw2value;
-            }
-        }
-        grad.setGradW2(gradw2);
+        gradients.setGradW2(gradw2);
 
         //计算b2的梯度并存入Gradients中
         double[] gradb2 = new double[outputUnitCount];
-        double bvalue = (y_hat - y) * y_hat * (1 - y_hat);
         for (int i = 0; i < gradb2.length; i++) {
-            gradb2[i] = bvalue;
+            if(i==y){
+                gradb2[i]=(y_hat[i]-1)*y_hat[i]*(1-y_hat[i]);
+            }else{
+                gradb2[i]=(y_hat[i]-0)*y_hat[i]*(1-y_hat[i]);
+            }
         }
-        grad.setGradB2(gradb2);
+        gradients.setGradB2(gradb2);
 
         //计算w1和b1的梯度并存入Gradients中
         double[][] gradw1 = new double[hidenUnitCount][inputUnitCount];
         double[] gradb1 = new double[hidenUnitCount];
-        double[] hiddengrad = new double[hidenUnitCount];
+
         for (int i = 0; i < hidenUnitCount; i++) {
-            hiddengrad[i] = (y_hat - y) * y_hat * (1 - y_hat) * w2[0][i] * forwardResult.getHiddenoutput()[i] * (1 - forwardResult.getHiddenoutput()[i]);
-            gradb1[i] = hiddengrad[i];
-        }
-        for (int i = 0; i < hidenUnitCount; i++) {
-            for (int j = 0; j < inputUnitCount; j++) {
-                gradw1[i][j] = hiddengrad[i] * forwardResult.getX()[j];
+            double sum=0;
+            for (int j = 0; j < outputUnitCount; j++) {
+                sum+=w2[j][i]*gradb2[j];
+            }
+            gradb1[i]=forwardResult.getHiddenoutput()[i]*(1-forwardResult.getHiddenoutput()[i])*sum;
+            for(int j=0;j<inputUnitCount;j++){
+                gradw1[i][j]=gradb1[i]*forwardResult.getX()[j];
             }
         }
-        grad.setGradW1(gradw1);
-
-        return grad;
+        gradients.setGradB1(gradb1);
+        gradients.setGradW1(gradw1);
+        return gradients;
     }
 
     public void UpdataParameters(Gradients gradients,double learnrate){
@@ -163,13 +156,19 @@ public class ForwardPropagation {
             double sumlosefunction=0;
             ArrayList<NeuralnetSample> samplelist=dataSet.getSamplelist();
             for (NeuralnetSample neuralnetSample : samplelist) {
-                //二分类问题
+                //多分类问题
                 ForwardResult fr=forward(neuralnetSample.getAttributevalue());
-                double prelabel=fr.getOutput()[0];//二分类问题的预测输出只有一个
+                //得到多分类问题每个类别的概率矩阵
+                double[] prelabel=fr.getOutput();
                 int truelabel=neuralnetSample.getLabel();
                 //计算该样的损失并加入总损失中
-                double lose=((prelabel-truelabel)*(prelabel-truelabel))/2;
-                sumlosefunction+=lose;
+                for (int i1 = 0; i1 < prelabel.length; i1++) {
+                    if(i1==truelabel){
+                        sumlosefunction+=((prelabel[i1]-1)*(prelabel[i1]-1))/2;
+                    }else{
+                        sumlosefunction+=(prelabel[i1]*prelabel[i1]/2);
+                    }
+                }
                 //得到这个样本的四组梯度
                 Gradients gradient=backward(fr,truelabel);
                 //把这个样本的四组梯度依次加到一个总梯度对象里
@@ -224,12 +223,16 @@ public class ForwardPropagation {
 
     public int predict(NeuralnetSample sample){
         int prelabel=0;
+        double maxgrade=-1;
+        int bestindex=-1;
         ForwardResult result=forward(sample.getAttributevalue());
-        if(result.getOutput()[0]>=0.5){
-            prelabel=1;
-        }else{
-            prelabel=0;
+        for (int i = 0; i < result.getOutput().length; i++) {
+            if(result.getOutput()[i]>maxgrade){
+                maxgrade=result.getOutput()[i];
+                bestindex=i;
+            }
         }
+        prelabel=bestindex;
         return prelabel;
     }
 }
