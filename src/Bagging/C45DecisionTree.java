@@ -1,8 +1,5 @@
 package Bagging;
 
-import NeuralNetWork.TenbyTen;
-
-import javax.print.DocFlavor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -26,7 +23,7 @@ public class C45DecisionTree {
         for (Integer label : labelcount.keySet()) {
             entropy+=((double)labelcount.get(label)/samplelist.size())*(Math.log((double)labelcount.get(label)/samplelist.size())/Math.log(2));
         }
-        return entropy;
+        return -entropy;
     }
 
     //选出该组样本中出现最多的类别
@@ -148,6 +145,52 @@ public class C45DecisionTree {
             //bestsplit=null表示，当前节点已经没有能够产生有效信息增益的划分方式了
             return new TreeNode(fallbacklabel(samplelist),samplelist);
         }
+        int bestattributeindex=bestSplit.getBestattributeindex();
+        double bestthreshold=bestSplit.getBestthreshold();
+        ArrayList<BaggingSample> leftsample=new ArrayList<>();
+        ArrayList<BaggingSample> rightsample=new ArrayList<>();
+        for (BaggingSample sample : samplelist) {
+            //根据最佳属性的最佳阈值划分左右子树
+            if(sample.getAttribute()[bestattributeindex]<=bestthreshold){
+                leftsample.add(sample);
+            }else{
+                rightsample.add(sample);
+            }
+        }
+        //构建左右子树
+        TreeNode lefttree=buildtree(leftsample,avaliableattributelist);
+        TreeNode righttree=buildtree(rightsample,avaliableattributelist);
+
+        //构建当前节点
+        int fallbacklabel=fallbacklabel(samplelist);//统计当前节点多数样本的下标
+        TreeNode tree=new TreeNode(bestattributeindex,bestthreshold,fallbacklabel,samplelist);
+
+        //把左右子树挂在当前节点下面
+        tree.setLeftTree(lefttree);
+        tree.setRightTree(righttree);
+
+        //返回当前节点
+        return tree;
+    }
+
+    //预测方法
+    public int predict(TreeNode tree,BaggingSample sample){
+        while(!tree.isIsleaf()){
+            //先取出父节点的fallback，当出现tree.lefttree或tree.righttree为null时，直接返回父节点的fallback
+            int fallback=tree.getFallback();
+
+            int attributrindex=tree.getAttributeindex();
+            double threshold=tree.getThreshold();
+            if(sample.getAttribute()[attributrindex]<=threshold){
+                tree=tree.getLeftTree();
+            }else{
+                tree=tree.getRightTree();
+            }
+            if(tree==null){
+                return fallback;
+            }
+        }
+        return tree.getLabel();
     }
 
 }
