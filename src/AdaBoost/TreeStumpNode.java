@@ -1,12 +1,12 @@
 package AdaBoost;
 
-public class C45DecisionTreeStumpNode {
+public class TreeStumpNode {
     private int attributeindex;
     private double threshold;
     private int leftlabel;
     private int rightlabel;
 
-    public C45DecisionTreeStumpNode(int attributeindex, double threshold, int leftlabel, int rightlabel) {
+    public TreeStumpNode(int attributeindex, double threshold, int leftlabel, int rightlabel) {
         this.attributeindex = attributeindex;
         this.threshold = threshold;
         this.leftlabel = leftlabel;
