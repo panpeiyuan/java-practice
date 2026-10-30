@@ -2,12 +2,12 @@ package AdaBoost;
 
 import java.util.ArrayList;
 
-public class BinaryAdaBoost {
+public class BinaryAdaBoostSample {
     //保存adaboost训练结果
     private ArrayList<Double> treeWeight;
     private ArrayList<TreeStumpNode> treelist;
 
-    public BinaryAdaBoost(ArrayList<TreeStumpNode> treelist,ArrayList<Double> treeWeight) {
+    public BinaryAdaBoostSample(ArrayList<TreeStumpNode> treelist, ArrayList<Double> treeWeight) {
         this.treeWeight = treeWeight;
         this.treelist = treelist;
     }

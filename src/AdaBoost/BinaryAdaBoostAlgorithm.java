@@ -11,7 +11,7 @@ public class BinaryAdaBoostAlgorithm {
         this.maxrounds = maxrounds;
     }
 
-    public BinaryAdaBoost train(ArrayList<AdaBoostSample> samplelist){
+    public BinaryAdaBoostSample train(ArrayList<AdaBoostSample> samplelist){
         //创建类别对象
         ArrayList<TreeStumpNode> treenodes=new ArrayList<>();
         ArrayList<Double> treeweights=new ArrayList<>();
@@ -38,6 +38,7 @@ public class BinaryAdaBoostAlgorithm {
                 }
             }
             if(errorrate>=0.5){
+                //大于等于0.5说明该分类器与随机分类无异，没有意义
                 break;
             }
             if(errorrate<1e-10){
@@ -62,15 +63,15 @@ public class BinaryAdaBoostAlgorithm {
             treenodes.add(treenode);
             treeweights.add(treeweight);
         }
-        BinaryAdaBoost binaryAdaBoost=new BinaryAdaBoost(treenodes,treeweights);
-        return binaryAdaBoost;
+        BinaryAdaBoostSample binaryAdaBoostSample =new BinaryAdaBoostSample(treenodes,treeweights);
+        return binaryAdaBoostSample;
     }
 
     //预测方法，根据所有模型及其权重，算出最终得分
-    public Double predictScore(BinaryAdaBoost binaryAdaBoost,AdaBoostSample sample){
+    public double predictScore(BinaryAdaBoostSample binaryAdaBoostSample, AdaBoostSample sample){
         //提取adaboost对象中存储的所有基学习器及其系数
-        ArrayList<TreeStumpNode> treemodels=binaryAdaBoost.getTreelist();
-        ArrayList<Double> treesweight=binaryAdaBoost.getTreeWeight();
+        ArrayList<TreeStumpNode> treemodels= binaryAdaBoostSample.getTreelist();
+        ArrayList<Double> treesweight= binaryAdaBoostSample.getTreeWeight();
         //计算最终得分
         double score=0;
         for (int i = 0; i < treemodels.size(); i++) {
@@ -80,8 +81,8 @@ public class BinaryAdaBoostAlgorithm {
     }
 
     //对最终得分调用sign函数，得分>=0返回1，得分<0返回-1
-    public int predict(BinaryAdaBoost binaryAdaBoost,AdaBoostSample sample){
-        double score=predictScore(binaryAdaBoost,sample);
+    public int predict(BinaryAdaBoostSample binaryAdaBoostSample, AdaBoostSample sample){
+        double score=predictScore(binaryAdaBoostSample,sample);
         if(score>=0){
             return 1;
         }else{
