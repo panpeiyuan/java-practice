@@ -1,4 +1,4 @@
-package chap13;
+package Knn;
 
 import KFold.KFoldEncapsulation;
 

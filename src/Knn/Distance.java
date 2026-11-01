@@ -1,4 +1,4 @@
-package chap13;
+package Knn;
 
 public class Distance {
     public static double euclidean(double[] a,double[] b){
