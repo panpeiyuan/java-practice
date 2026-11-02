@@ -29,11 +29,14 @@ public class KmeansAlgorithm {
     }
 
     public double[][] initializeCenter(ArrayList<KmeansSample> samplelist,int k){
+        //初始化簇中心
         double[][] initializecenter=new double[k][dataSet.getAttnumber()];
+        //为每个样本生成一个标记，只选取没有选过的样本作为中心
+        int[] sampletag=new int[samplelist.size()];
         for (int sample = 0; sample < initializecenter.length; sample++) {
-            for (int attribute = 0; attribute < sample; attribute++) {
+            for (int attribute = 0; attribute < initializecenter[sample].length; attribute++) {
                 Random random=new Random(seed);
-                int index=random.nextInt();
+                int index=random.nextInt(samplelist.size());
                 initializecenter[sample]=samplelist.get(index).getAttribute();
             }
         }
